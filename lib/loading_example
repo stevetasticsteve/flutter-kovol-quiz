@@ -1,0 +1,17 @@
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text(
+          this.title,
+          style: new TextStyle(color: this.barTitleColor)
+        ),
+        backgroundColor: this.appBarColor,
+      ),
+      body: new Center(
+        child: new FutureBuilder(
+          future: DefaultAssetBundle.of(context).loadString(fileName),
+          builder: (context, snapshot) {
+            return new Text(snapshot.data ?? '', softWrap: true);
+          }
+        ),
+      ),
+    );

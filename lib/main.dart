@@ -6,29 +6,33 @@ import 'dart:convert' show utf8;
 import 'package:flutter/material.dart';
 import 'package:csv/csv.dart';
 
-void main() {
-  runApp(const Quiz());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final data = await loadCSV();
+  runApp(Quiz(data: data));
 }
 
+// List<List<dynamic>> data = [];
+
+loadCSV() async {
+  final rawData = await rootBundle.loadString('assets/data/test.csv');
+  List<List<dynamic>> listData = CsvToListConverter(eol: '\n').convert(rawData);
+  return listData;
+}
+
+
+
 class Quiz extends StatefulWidget {
-  const Quiz({Key? key}) : super(key: key);
+  final List data;
+  const Quiz({Key? key, required this.data}) : super(key: key);
 
   @override
   _QuizState createState() => _QuizState();
 }
 
+
+
 class _QuizState extends State<Quiz> {
-
-  // Future<String> _loadData() async {
-  //   return await rootBundle.loadString('assets/data/words.csv');
-  // }
-
-  Future<String> _loadData() async {
-    final _rawData = await rootBundle.loadString("assets/data/words.csv");
-    List _listData = CsvToListConverter().convert(_rawData);
-    return _listData[0];
-  }
-
   @override
   Widget build(BuildContext context) {
     Widget quizQuestion = Container(
@@ -37,59 +41,7 @@ class _QuizState extends State<Quiz> {
             'What is the meaning of:',
             style: const TextStyle(fontSize: 25),
           ),
-
-          FutureBuilder<String>(
-            future: _loadData(), // a previously-obtained Future<String> or null
-            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-              List<Widget> children;
-              if (snapshot.hasData) {
-                children = <Widget>[
-                  const Icon(
-                    Icons.check_circle_outline,
-                    color: Colors.green,
-                    size: 60,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Text('Result: ${snapshot.data}'),
-                  )
-                ];
-              } else if (snapshot.hasError) {
-                children = <Widget>[
-                  const Icon(
-                    Icons.error_outline,
-                    color: Colors.red,
-                    size: 60,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Text('Error: ${snapshot.error}'),
-                  )
-                ];
-              } else {
-                children = const <Widget>[
-                  SizedBox(
-                    width: 60,
-                    height: 60,
-                    child: CircularProgressIndicator(),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 16),
-                    child: Text('Awaiting result...'),
-                  )
-                ];
-              }
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: children,
-                ),
-              );
-            },
-          ),
-
-
-          Text('question',
+          Text(widget.data[1][0],
               style: const TextStyle(
                   fontSize: 20, height: 2, fontStyle: FontStyle.italic)),
         ]),

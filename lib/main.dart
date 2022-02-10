@@ -28,7 +28,10 @@ class Quiz extends StatefulWidget {
 class _QuizState extends State<Quiz> {
   int correct = 0;
   int total = 0;
+  bool newQuestion = true;
   bool? correctAnswer;
+  late List _options;
+  late List _question;
 
   List pickOptions(data) {
     data.shuffle();
@@ -45,21 +48,24 @@ class _QuizState extends State<Quiz> {
     if (question[1] == buttonPress) {
       setState(() {
         correctAnswer = true;
+        newQuestion = true;
       });
       correct++;
     } else {
       setState(() {
         correctAnswer = false;
+        newQuestion = false;
       });
-      
     }
     total++;
   }
 
   @override
   Widget build(BuildContext context) {
-    List _options = pickOptions(widget.data);
-    List _question = pickQuestion(_options);
+    if (newQuestion) {
+      _options = pickOptions(widget.data);
+      _question = pickQuestion(_options);
+    }
     Widget quizQuestion = Container(
         child: Column(children: [
           const Text(
@@ -116,8 +122,15 @@ class _QuizState extends State<Quiz> {
   }
 
   Widget _buildAnswerButton(String label, List _question) {
-    final buttonStyle =
-        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
+    var buttonStyle;
+    if (newQuestion == false && label == _question[1]) {
+       buttonStyle =
+          ElevatedButton.styleFrom(
+          primary: Colors.green, textStyle: const TextStyle(fontSize: 20));
+    } else {
+       buttonStyle = ElevatedButton.styleFrom(
+         textStyle: const TextStyle(fontSize: 20));
+    }
     return Expanded(
         child: Container(
       child: ElevatedButton(
@@ -153,7 +166,7 @@ class _AnswerWidgetState extends State<AnswerWidget> {
     } else if (widget.answer == true) {
       responseText = 'Correct';
     } else {
-      responseText = 'Wrong, tap to continue';
+      responseText = 'Wrong, tap correct answer to continue';
     }
     return GestureDetector(
         onTap: nextQuestion,

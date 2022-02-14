@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:csv/csv.dart';
+import './aboutScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,6 +61,37 @@ class _QuizState extends State<Quiz> {
     total++;
   }
 
+  void resetQuiz() {
+    setState(() {
+      correct = 0;
+      total = 0;
+      correctAnswer = null;
+      newQuestion = true;
+    });
+  }
+
+  Widget _buildAnswerButton(String label, List _question) {
+    var buttonStyle;
+    if (newQuestion == false && label == _question[1]) {
+      buttonStyle = ElevatedButton.styleFrom(
+          primary: Colors.green, textStyle: const TextStyle(fontSize: 20));
+    } else {
+      buttonStyle =
+          ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
+    }
+    return Expanded(
+        child: Container(
+      child: ElevatedButton(
+          style: buttonStyle,
+          onPressed: () {
+            checkAnwer(_question, '$label');
+          },
+          child: Text(label)),
+      margin: const EdgeInsets.all(8),
+      height: 50,
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     if (newQuestion) {
@@ -97,6 +129,7 @@ class _QuizState extends State<Quiz> {
     return MaterialApp(
       title: 'Kovol quiz',
       home: Scaffold(
+        drawer: const AppDrawer(),
         appBar: AppBar(title: const Text('Kovol quiz'), actions: <Widget>[
           Container(
               margin: const EdgeInsets.only(right: 20.0),
@@ -120,62 +153,63 @@ class _QuizState extends State<Quiz> {
       ),
     );
   }
-
-  Widget _buildAnswerButton(String label, List _question) {
-    var buttonStyle;
-    if (newQuestion == false && label == _question[1]) {
-       buttonStyle =
-          ElevatedButton.styleFrom(
-          primary: Colors.green, textStyle: const TextStyle(fontSize: 20));
-    } else {
-       buttonStyle = ElevatedButton.styleFrom(
-         textStyle: const TextStyle(fontSize: 20));
-    }
-    return Expanded(
-        child: Container(
-      child: ElevatedButton(
-          style: buttonStyle,
-          onPressed: () {
-            checkAnwer(_question, '$label');
-          },
-          child: Text(label)),
-      margin: const EdgeInsets.all(8),
-      height: 50,
-    ));
-  }
 }
 
-class AnswerWidget extends StatefulWidget {
+class AnswerWidget extends StatelessWidget {
   const AnswerWidget({required this.answer, Key? key}) : super(key: key);
   final bool? answer;
-  @override
-  _AnswerWidgetState createState() => _AnswerWidgetState();
-}
-
-class _AnswerWidgetState extends State<AnswerWidget> {
-  late String responseText;
-
-  void nextQuestion() {
-    print('next question');
-  }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.answer == null) {
+    String responseText;
+    if (answer == null) {
       responseText = '';
-    } else if (widget.answer == true) {
+    } else if (answer == true) {
       responseText = 'Correct';
     } else {
       responseText = 'Wrong, tap correct answer to continue';
     }
-    return GestureDetector(
-        onTap: nextQuestion,
-        child: Text(responseText,
-            style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-              height: 2,
-              color: widget.answer ?? true ? Colors.green : Colors.red,
-            )));
+    return Text(responseText,
+        style: TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          height: 2,
+          color: answer ?? true ? Colors.green : Colors.red,
+        ));
+  }
+}
+
+class AppDrawer extends StatelessWidget {
+  const AppDrawer({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Text(
+              'Kovol quiz',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
+            ),
+          ),
+          ListTile(
+            leading: const Icon(Icons.info),
+            title: const Text('About'),
+            onTap: () {
+              Navigator.of(context).pop();
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (BuildContext context) => const AboutPage()));
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -53,3 +53,5 @@ test/
 lib/example.dart
 lib/loading_example.dart
 lib/stateless.dart
+web_page.html
+sync_to_server.sh

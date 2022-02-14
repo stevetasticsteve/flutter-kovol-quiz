@@ -34,5 +34,5 @@ const String aboutString =
 The Kovol language of Papua New Guinea has roughly 1000 speakers.
 It has the ethnologue language code of kgu.
 
-This quiz is built using data gathered by missionairies who have been studying the language.
+This quiz is built using data gathered by missionaries who have been studying the language.
     ''';

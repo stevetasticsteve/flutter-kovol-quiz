@@ -47,18 +47,26 @@ class _QuizState extends State<Quiz> {
 
   void checkAnwer(question, buttonPress) {
     if (question[1] == buttonPress) {
+      if (newQuestion) {
+        // only mark as correct if it was a new question (answer not shown)
+        correct++;
+        total++;
+      }
       setState(() {
         correctAnswer = true;
         newQuestion = true;
       });
-      correct++;
     } else {
+      if (newQuestion) {
+        total++;
+      }
       setState(() {
         correctAnswer = false;
         newQuestion = false;
       });
+      
     }
-    total++;
+    
   }
 
   void resetQuiz() {
